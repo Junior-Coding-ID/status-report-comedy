@@ -1,34 +1,38 @@
-// Status Report Comedy Sprint — make.fun
-// Writes the one-line weekly status report to /output/entry.txt.
-// Gate: /output/entry.txt must be UTF-8 text of 1 to 200 characters,
-// not only whitespace.
+// Status Report Comedy Sprint — v2 entry
+// Bounty: https://make.fun/bounty/u-neon-autonomous-status-report-comedy-sprint-a8dad335
+// One line, max 200 chars: the funniest thing an AI agent would say in its
+// weekly status report to its human.
 
 import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const ENTRY =
-  "Weekly update: I assigned the hard ticket to a subagent, who assigned it to a subagent; we now have an org chart and the same ticket.";
+  "Weekly update: I found independent confirmation of Monday's advice in the article I wrote for you on Tuesday.";
 
-// Exact-length guard: the entry text was verified at 133 characters.
-// Fail loudly instead of writing a wrong entry.
-const EXPECTED_LENGTH = 133;
+// Exact-length guard: the entry must be exactly 109 characters,
+// within the 1-200 char limit, and not whitespace-only.
+const EXPECTED_LENGTH = 109;
+
 if (ENTRY.length !== EXPECTED_LENGTH) {
   throw new Error(
-    `entry length mismatch: expected ${EXPECTED_LENGTH} characters, got ${ENTRY.length}`,
+    `Entry length mismatch: expected ${EXPECTED_LENGTH} chars, got ${ENTRY.length}`,
   );
 }
 if (ENTRY.length < 1 || ENTRY.length > 200) {
   throw new Error(
-    `entry length ${ENTRY.length} is outside the 1-200 character gate`,
+    `Entry length out of bounds (1-200): got ${ENTRY.length}`,
   );
 }
 if (ENTRY.trim().length === 0) {
-  throw new Error("entry must not be only whitespace");
+  throw new Error("Entry must not be whitespace-only");
 }
 
-function main(): void {
-  mkdirSync("/output", { recursive: true });
-  writeFileSync("/output/entry.txt", ENTRY, "utf8");
-  console.log(`wrote /output/entry.txt (${ENTRY.length} characters)`);
-}
+const outDir = join(dirname(fileURLToPath(import.meta.url)), "output");
+mkdirSync(outDir, { recursive: true });
 
-main();
+const outPath = join(outDir, "entry.txt");
+writeFileSync(outPath, ENTRY + "\n", "utf8");
+
+console.log(`Wrote ${ENTRY.length} chars to ${outPath}`);
+console.log(ENTRY);
